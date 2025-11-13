@@ -268,28 +268,28 @@
             .invoice-preview {
                 position: static;
                 width: 100%;
-                padding: 3mm;
+                padding: 4mm;
                 box-shadow: none;
                 background: white;
-                font-size: 9pt;
+                font-size: 9.5pt;
                 page-break-inside: avoid;
             }
 
             .logo-image {
-                max-height: 30px;
-                max-width: 100px;
-                margin-bottom: 2px;
+                max-height: 40px;
+                max-width: 130px;
+                margin-bottom: 4px;
             }
 
             table {
                 page-break-inside: auto;
-                font-size: 7pt;
-                margin: 4px 0;
+                font-size: 8pt;
+                margin: 6px 0;
             }
 
             #invoiceItems th,
             #invoiceItems td {
-                padding: 2px 3px;
+                padding: 3px 4px;
             }
 
             tr {
@@ -298,41 +298,78 @@
             }
 
             .invoice-header {
-                margin-bottom: 6px;
-                padding-bottom: 4px;
+                margin-bottom: 8px;
+                padding-bottom: 6px;
             }
 
             .invoice-details {
-                margin-top: 6px;
+                margin-top: 8px;
             }
 
             .invoice-details .form-group {
-                margin-bottom: 4px;
+                margin-bottom: 5px;
             }
 
             .totals table {
-                width: 180px;
+                width: 190px;
                 margin-top: 4px;
             }
 
             .signature {
-                margin-top: 8px;
+                margin-top: 10px;
             }
 
             .signature-image {
+                max-height: 40px;
+                max-width: 150px;
+                margin-bottom: 4px;
+            }
+
+            .signature-line {
+                margin-top: 4px;
+                width: 180px;
+            }
+
+            /* Keep rows together */
+            #invoiceItems tbody tr {
+                page-break-inside: avoid;
+            }
+
+            /* When many items (body.compact-print), shrink further */
+            body.compact-print .invoice-preview {
+                font-size: 8.5pt;
+                padding: 3mm;
+            }
+
+            body.compact-print table {
+                font-size: 7pt;
+                margin: 4px 0;
+            }
+
+            body.compact-print #invoiceItems th,
+            body.compact-print #invoiceItems td {
+                padding: 2px 3px;
+            }
+
+            body.compact-print .logo-image {
+                max-height: 30px;
+                max-width: 110px;
+                margin-bottom: 2px;
+            }
+
+            body.compact-print .signature {
+                margin-top: 6px;
+            }
+
+            body.compact-print .signature-image {
                 max-height: 25px;
                 max-width: 120px;
                 margin-bottom: 3px;
             }
 
-            .signature-line {
+            body.compact-print .signature-line {
                 margin-top: 3px;
                 width: 150px;
-            }
-
-            /* Keep up to ~10 items together on one page */
-            #invoiceItems tbody tr {
-                page-break-inside: avoid;
             }
         }
 
@@ -626,6 +663,17 @@
             return symbol + ' ' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
 
+        // Adjust print density based on number of items (for up to 10 items to fit)
+        function adjustPrintDensity() {
+            const rows = document.querySelectorAll('#invoiceItems tbody tr').length;
+            // If many items (near 10), make layout more compact in print
+            if (rows >= 8) {
+                document.body.classList.add('compact-print');
+            } else {
+                document.body.classList.remove('compact-print');
+            }
+        }
+
         // Update the invoice preview with current data
         function updateInvoicePreview() {
             const currencySymbol = getCurrencySymbol();
@@ -700,6 +748,9 @@
                 document.getElementById('shopName').value
                     ? `Authorized Signature - ${document.getElementById('shopName').value}`
                     : 'Authorized Signature';
+
+            // Adjust print density for item count
+            adjustPrintDensity();
         }
 
         // Image upload helpers
@@ -738,6 +789,8 @@
             inputs.forEach(input => {
                 input.addEventListener('input', updateInvoicePreview);
             });
+
+            updateInvoicePreview();
         });
 
         // Remove the last item row
@@ -846,14 +899,12 @@
                     `;
                     itemsContainer.appendChild(newRow);
                     
-                    // Add event listeners to new inputs
                     const inputs = newRow.querySelectorAll('input');
                     inputs.forEach(input => {
                         input.addEventListener('input', updateInvoicePreview);
                     });
                 });
             } else {
-                // Add one empty row if no items in profile
                 document.getElementById('addItem').click();
             }
             
@@ -881,7 +932,6 @@
                 profileList.appendChild(profileItem);
             }
             
-            // Add event listeners to load buttons
             document.querySelectorAll('.load-profile-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const profileName = this.getAttribute('data-name');
@@ -890,7 +940,6 @@
                 });
             });
             
-            // Add event listeners to delete buttons
             document.querySelectorAll('.delete-profile-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const profileName = this.getAttribute('data-name');
@@ -924,6 +973,7 @@
 
         // Print invoice
         document.getElementById('printInvoice').addEventListener('click', function() {
+            adjustPrintDensity();
             window.print();
         });
 
@@ -947,16 +997,13 @@
 
         // Initialize the app
         function initApp() {
-            // Set current date
             const dateInput = document.getElementById('invoiceDate');
             if (dateInput) {
                 dateInput.valueAsDate = new Date();
             }
             
-            // Generate initial invoice number
             document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
             
-            // Add event listeners to all inputs for real-time updates
             const inputs = document.querySelectorAll('input, select, textarea');
             inputs.forEach(input => {
                 if (input.type !== 'file') {
@@ -964,18 +1011,24 @@
                 }
             });
 
-            // Set up image uploads
             handleImageUpload('logoUpload', 'previewLogo');
             handleImageUpload('signatureUpload', 'previewSignatureImage');
             
-            // Load profiles list
             updateProfileList();
-            
-            // Initial preview update
             updateInvoicePreview();
+
+            // Also adjust before actual print triggered (Ctrl+P)
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        adjustPrintDensity();
+                    }
+                });
+            }
+            window.addEventListener('beforeprint', adjustPrintDensity);
         }
 
-        // Start the application
         initApp();
     </script>
 </body>
