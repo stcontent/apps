@@ -330,7 +330,6 @@
                 width: 180px;
             }
 
-            /* Keep rows together */
             #invoiceItems tbody tr {
                 page-break-inside: avoid;
             }
@@ -556,6 +555,7 @@
                     <button type="button" id="removeSignatureBtn" class="btn-danger" style="margin-top:5px;">Remove Signature</button>
                 </div>
 
+                <!-- Existing Local Profile System -->
                 <div class="profile-management">
                     <h2>Save/Load Profile</h2>
                     <div class="form-group">
@@ -569,6 +569,20 @@
                     <div class="profile-list" id="profileList">
                         <!-- Profiles will be listed here -->
                     </div>
+                </div>
+
+                <!-- NEW: JSON Save/Load (separate from profiles) -->
+                <div class="profile-management">
+                    <h2>JSON Save / Load</h2>
+                    <div class="form-group">
+                        <label for="jsonName">JSON Name</label>
+                        <input type="text" id="jsonName" placeholder="Enter name for JSON file">
+                    </div>
+                    <div class="action-buttons">
+                        <button id="downloadJsonBtn" class="btn-success">Download JSON</button>
+                        <button id="triggerLoadJsonBtn" class="btn-success">Load JSON</button>
+                    </div>
+                    <input type="file" id="loadJsonInput" accept="application/json" style="display:none;">
                 </div>
             </div>
 
@@ -663,15 +677,113 @@
             return symbol + ' ' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
 
-        // Adjust print density based on number of items (for up to 10 items to fit)
+        // Adjust print density based on number of items (for up to ~10 items to fit)
         function adjustPrintDensity() {
             const rows = document.querySelectorAll('#invoiceItems tbody tr').length;
-            // If many items (near 10), make layout more compact in print
             if (rows >= 8) {
                 document.body.classList.add('compact-print');
             } else {
                 document.body.classList.remove('compact-print');
             }
+        }
+
+        // Get current invoice + profile data as a JSON-serializable object
+        function getCurrentInvoiceData() {
+            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
+            const items = [];
+            itemRows.forEach(row => {
+                items.push({
+                    name: row.querySelector('.itemName').value,
+                    desc: row.querySelector('.itemDesc').value,
+                    qty: row.querySelector('.itemQty').value,
+                    rate: row.querySelector('.itemRate').value
+                });
+            });
+
+            return {
+                type: 'quickbill-invoice',
+                jsonName: document.getElementById('jsonName').value || '',
+                profileName: document.getElementById('profileName').value || '',
+                shopName: document.getElementById('shopName').value,
+                shopContact: document.getElementById('shopContact').value,
+                shopAddress: document.getElementById('shopAddress').value,
+                currencySymbol: document.getElementById('currencySymbol').value,
+                logoImage: document.getElementById('previewLogo').getAttribute('src') || '',
+                signatureImage: document.getElementById('previewSignatureImage').getAttribute('src') || '',
+                invoiceNo: document.getElementById('previewInvoiceNo').textContent,
+                invoiceDate: document.getElementById('invoiceDate').value,
+                customerName: document.getElementById('customerName').value,
+                discountType: document.getElementById('discountType').value,
+                discountValue: document.getElementById('discountValue').value,
+                items: items
+            };
+        }
+
+        // Apply data from JSON object back into the UI
+        function applyInvoiceDataFromJson(data) {
+            if (!data || typeof data !== 'object') return;
+
+            document.getElementById('shopName').value = data.shopName || '';
+            document.getElementById('shopContact').value = data.shopContact || '';
+            document.getElementById('shopAddress').value = data.shopAddress || '';
+            document.getElementById('currencySymbol').value = data.currencySymbol || 'Rs';
+
+            const logoImg = document.getElementById('previewLogo');
+            if (data.logoImage) {
+                logoImg.src = data.logoImage;
+                logoImg.style.display = 'block';
+            } else {
+                logoImg.removeAttribute('src');
+                logoImg.style.display = 'none';
+            }
+
+            const sigImg = document.getElementById('previewSignatureImage');
+            if (data.signatureImage) {
+                sigImg.src = data.signatureImage;
+                sigImg.style.display = 'block';
+            } else {
+                sigImg.removeAttribute('src');
+                sigImg.style.display = 'none';
+            }
+
+            if (data.invoiceNo) {
+                document.getElementById('previewInvoiceNo').textContent = data.invoiceNo;
+            }
+            if (data.invoiceDate) {
+                document.getElementById('invoiceDate').value = data.invoiceDate;
+            }
+            document.getElementById('customerName').value = data.customerName || '';
+            document.getElementById('discountType').value = data.discountType || 'none';
+            document.getElementById('discountValue').value = data.discountValue || '';
+
+            if (data.profileName) {
+                document.getElementById('profileName').value = data.profileName;
+            }
+            if (data.jsonName) {
+                document.getElementById('jsonName').value = data.jsonName;
+            }
+
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = '';
+            if (Array.isArray(data.items) && data.items.length) {
+                data.items.forEach(item => {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'item-row';
+                    newRow.innerHTML = `
+                        <input type="text" class="itemName" placeholder="Item name" value="${item.name || ''}">
+                        <input type="text" class="itemDesc" placeholder="Description" value="${item.desc || ''}">
+                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="${item.qty || 1}">
+                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01" value="${item.rate || ''}">
+                    `;
+                    itemsContainer.appendChild(newRow);
+                    const inputs = newRow.querySelectorAll('input');
+                    inputs.forEach(input => input.addEventListener('input', updateInvoicePreview));
+                });
+            } else {
+                document.getElementById('addItem').click();
+            }
+
+            updateInvoicePreview();
         }
 
         // Update the invoice preview with current data
@@ -690,11 +802,11 @@
             document.getElementById('previewCustomerName').textContent =
                 document.getElementById('customerName').value || 'Customer Name';
             
-            // Update table headers with currency symbol
+            // Headers
             document.getElementById('rateHeader').textContent = `Rate (${currencySymbol})`;
             document.getElementById('amountHeader').textContent = `Amount (${currencySymbol})`;
             
-            // Invoice items
+            // Items
             const itemsTable = document.getElementById('invoiceItems').getElementsByTagName('tbody')[0];
             itemsTable.innerHTML = '';
             
@@ -721,7 +833,7 @@
                 }
             });
             
-            // Calculate discount
+            // Discount
             const discountType = document.getElementById('discountType').value;
             const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
             let discountAmount = 0;
@@ -736,20 +848,19 @@
                 document.getElementById('discountLabel').textContent = 'Discount:';
             }
             
-            // Update totals
             const total = subtotal - discountAmount;
             
             document.getElementById('subtotal').textContent = formatCurrency(subtotal);
             document.getElementById('discountAmount').textContent = formatCurrency(discountAmount);
             document.getElementById('totalAmount').innerHTML = `<strong>${formatCurrency(total)}</strong>`;
             
-            // Update signature text
+            // Signature text
             document.getElementById('previewSignature').textContent =
                 document.getElementById('shopName').value
                     ? `Authorized Signature - ${document.getElementById('shopName').value}`
                     : 'Authorized Signature';
 
-            // Adjust print density for item count
+            // Adjust print style based on row count
             adjustPrintDensity();
         }
 
@@ -784,7 +895,6 @@
             `;
             itemsContainer.appendChild(newRow);
             
-            // Add event listeners to new inputs
             const inputs = newRow.querySelectorAll('input');
             inputs.forEach(input => {
                 input.addEventListener('input', updateInvoicePreview);
@@ -793,7 +903,7 @@
             updateInvoicePreview();
         });
 
-        // Remove the last item row
+        // Remove last item row
         document.getElementById('removeItem').addEventListener('click', function() {
             const itemsContainer = document.getElementById('itemsContainer');
             if (itemsContainer.children.length > 1) {
@@ -802,7 +912,7 @@
             }
         });
 
-        // Save profile to localStorage (includes logo & signature)
+        // Save profile to localStorage
         document.getElementById('saveProfile').addEventListener('click', function() {
             const profileName = document.getElementById('profileName').value.trim();
             if (!profileName) {
@@ -820,7 +930,6 @@
                 items: []
             };
             
-            // Collect all items
             const itemRows = document.querySelectorAll('#itemsContainer .item-row');
             itemRows.forEach(row => {
                 profileData.items.push({
@@ -831,7 +940,6 @@
                 });
             });
             
-            // Save to localStorage
             let profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
             profiles[profileName] = profileData;
             localStorage.setItem('invoiceProfiles', JSON.stringify(profiles));
@@ -841,7 +949,7 @@
             document.getElementById('profileName').value = '';
         });
 
-        // Load profile from localStorage (includes logo & signature)
+        // Load profile from localStorage
         document.getElementById('loadProfile').addEventListener('click', function() {
             const profileName = document.getElementById('profileName').value.trim();
             if (!profileName) {
@@ -857,13 +965,11 @@
                 return;
             }
             
-            // Load shop data
             document.getElementById('shopName').value = profileData.shopName || '';
             document.getElementById('shopContact').value = profileData.shopContact || '';
             document.getElementById('shopAddress').value = profileData.shopAddress || '';
             document.getElementById('currencySymbol').value = profileData.currencySymbol || 'Rs';
             
-            // Load logo image
             const logoImg = document.getElementById('previewLogo');
             if (profileData.logoImage) {
                 logoImg.src = profileData.logoImage;
@@ -873,7 +979,6 @@
                 logoImg.style.display = 'none';
             }
 
-            // Load signature image
             const sigImg = document.getElementById('previewSignatureImage');
             if (profileData.signatureImage) {
                 sigImg.src = profileData.signatureImage;
@@ -883,7 +988,6 @@
                 sigImg.style.display = 'none';
             }
             
-            // Load items
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.innerHTML = '';
             
@@ -912,7 +1016,7 @@
             alert('Profile loaded successfully!');
         });
 
-        // Update the profile list in the UI
+        // Update profile list in UI
         function updateProfileList() {
             const profileList = document.getElementById('profileList');
             profileList.innerHTML = '';
@@ -971,6 +1075,51 @@
             sigImg.style.display = 'none';
         });
 
+        // JSON Download (save to file)
+        document.getElementById('downloadJsonBtn').addEventListener('click', function () {
+            const nameInput = document.getElementById('jsonName').value.trim();
+            if (!nameInput) {
+                alert('Please enter a JSON name');
+                return;
+            }
+
+            const data = getCurrentInvoiceData();
+            data.jsonName = nameInput;
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nameInput.replace(/[^a-z0-9_\-]/gi, '_') + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // JSON Load (from file)
+        document.getElementById('triggerLoadJsonBtn').addEventListener('click', function () {
+            document.getElementById('loadJsonInput').click();
+        });
+
+        document.getElementById('loadJsonInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    applyInvoiceDataFromJson(data);
+                    alert('JSON loaded successfully!');
+                } catch (err) {
+                    alert('Invalid JSON file');
+                }
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+
         // Print invoice
         document.getElementById('printInvoice').addEventListener('click', function() {
             adjustPrintDensity();
@@ -982,7 +1131,6 @@
             document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
             document.getElementById('invoiceDate').valueAsDate = new Date();
             
-            // Reset customer and items (keep shop/profile settings & images)
             document.getElementById('customerName').value = '';
             
             const itemsContainer = document.getElementById('itemsContainer');
@@ -995,7 +1143,7 @@
             updateInvoicePreview();
         });
 
-        // Initialize the app
+        // Initialize app
         function initApp() {
             const dateInput = document.getElementById('invoiceDate');
             if (dateInput) {
@@ -1017,11 +1165,11 @@
             updateProfileList();
             updateInvoicePreview();
 
-            // Also adjust before actual print triggered (Ctrl+P)
+            // Adjust before Ctrl+P as well
             if (window.matchMedia) {
-                const mediaQueryList = window.matchMedia('print');
-                mediaQueryList.addListener(function(mql) {
-                    if (mql.matches) {
+                const mql = window.matchMedia('print');
+                mql.addListener(function(mq) {
+                    if (mq.matches) {
                         adjustPrintDensity();
                     }
                 });
