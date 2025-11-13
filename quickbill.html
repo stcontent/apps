@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickBill - Billing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .settings-panel {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-preview {
+            flex: 2;
+            min-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        td {
+            font-size: 0.85rem;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-details {
+            margin-top: 20px;
+        }
+
+        .totals {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        .totals table {
+            width: 250px;
+            margin-left: auto;
+        }
+
+        .signature {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 200px;
+            margin-left: auto;
+            margin-top: 30px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .item-row input {
+            flex: 1;
+        }
+
+        .profile-management {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .profile-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        /* Print Styles for A5 */
+        @media print {
+            @page {
+                size: A5;
+                margin: 10mm;
+            }
+            
+            body * {
+                visibility: hidden;
+            }
+            .invoice-preview, .invoice-preview * {
+                visibility: visible;
+            }
+            .invoice-preview {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 0;
+                box-shadow: none;
+                background: white;
+                font-size: 11pt;
+            }
+            .no-print {
+                display: none;
+            }
+            table {
+                page-break-inside: auto;
+                font-size: 9pt;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            .invoice-header {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+            .invoice-details {
+                margin-top: 15px;
+            }
+            .totals table {
+                width: 200px;
+            }
+            th, td {
+                padding: 6px 8px;
+            }
+            /* Ensure at least 5 items fit on one page */
+            #invoiceItems tbody tr:nth-child(-n+5) {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .settings-panel, .invoice-preview {
+                min-width: 100%;
+            }
+            
+            .invoice-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .invoice-title {
+                text-align: center;
+                margin-top: 15px;
+            }
+            
+            .item-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons button {
+                width: 100%;
+            }
+            
+            .totals table {
+                width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .settings-panel, .invoice-preview {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Optimize table column widths for A5 */
+        #invoiceItems {
+            table-layout: fixed;
+        }
+        
+        #invoiceItems th:nth-child(1),
+        #invoiceItems td:nth-child(1) {
+            width: 20%; /* Item name */
+        }
+        
+        #invoiceItems th:nth-child(2),
+        #invoiceItems td:nth-child(2) {
+            width: 35%; /* Description */
+        }
+        
+        #invoiceItems th:nth-child(3),
+        #invoiceItems td:nth-child(3) {
+            width: 10%; /* Quantity */
+            text-align: center;
+        }
+        
+        #invoiceItems th:nth-child(4),
+        #invoiceItems td:nth-child(4) {
+            width: 15%; /* Rate */
+            text-align: right;
+        }
+        
+        #invoiceItems th:nth-child(5),
+        #invoiceItems td:nth-child(5) {
+            width: 20%; /* Amount */
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QuickBill - Billing System</h1>
+            <p>Create professional invoices quickly and easily</p>
+        </header>
+
+        <div class="app-container">
+            <div class="settings-panel">
+                <h2>Shop Information</h2>
+                <div class="form-group">
+                    <label for="shopName">Shop Name</label>
+                    <input type="text" id="shopName" placeholder="Enter shop name" value="Your Shop Name">
+                </div>
+                <div class="form-group">
+                    <label for="shopContact">Contact</label>
+                    <input type="text" id="shopContact" placeholder="Enter contact number" value="Your Contact">
+                </div>
+                <div class="form-group">
+                    <label for="shopAddress">Address</label>
+                    <textarea id="shopAddress" rows="3" placeholder="Enter shop address">Your Address</textarea>
+                </div>
+
+                <h2>Currency Settings</h2>
+                <div class="form-group">
+                    <label for="currencySymbol">Currency Symbol/Name</label>
+                    <input type="text" id="currencySymbol" placeholder="e.g. Rs, $, €, USD" value="Rs">
+                </div>
+
+                <h2>Customer Information</h2>
+                <div class="form-group">
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" id="customerName" placeholder="Enter customer name">
+                </div>
+
+                <h2>Invoice Items</h2>
+                <div id="itemsContainer">
+                    <div class="item-row">
+                        <input type="text" class="itemName" placeholder="Item name">
+                        <input type="text" class="itemDesc" placeholder="Description">
+                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="1">
+                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="addItem" class="btn-success">Add Item</button>
+                    <button id="removeItem" class="btn-danger">Remove Item</button>
+                </div>
+
+                <h2>Discount</h2>
+                <div class="form-group">
+                    <label for="discountType">Discount Type</label>
+                    <select id="discountType">
+                        <option value="none">No Discount</option>
+                        <option value="flat">Flat Amount</option>
+                        <option value="percent">Percentage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="discountValue">Discount Value</label>
+                    <input type="number" id="discountValue" min="0" step="0.01" placeholder="Enter discount value">
+                </div>
+
+                <div class="profile-management">
+                    <h2>Save/Load Profile</h2>
+                    <div class="form-group">
+                        <label for="profileName">Profile Name</label>
+                        <input type="text" id="profileName" placeholder="Enter profile name">
+                    </div>
+                    <div class="action-buttons">
+                        <button id="saveProfile" class="btn-success">Save Profile</button>
+                        <button id="loadProfile" class="btn-success">Load Profile</button>
+                    </div>
+                    <div class="profile-list" id="profileList">
+                        <!-- Profiles will be listed here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-preview">
+                <div class="invoice-header">
+                    <div>
+                        <h2 id="previewShopName">Your Shop Name</h2>
+                        <p id="previewShopContact">Contact: Your Contact</p>
+                        <p id="previewShopAddress">Your Address</p>
+                    </div>
+                    <div class="invoice-title">
+                        <h2>INVOICE</h2>
+                        <p id="previewInvoiceNo">INV00001</p>
+                    </div>
+                </div>
+
+                <div class="invoice-details">
+                    <div class="form-group">
+                        <label for="invoiceDate">Date</label>
+                        <input type="date" id="invoiceDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Bill To:</label>
+                        <p id="previewCustomerName">Customer Name</p>
+                    </div>
+
+                    <table id="invoiceItems">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th id="rateHeader">Rate</th>
+                                <th id="amountHeader">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items will be added here dynamically -->
+                        </tbody>
+                    </table>
+
+                    <div class="totals">
+                        <table>
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td id="subtotal">Rs 0.00</td>
+                            </tr>
+                            <tr>
+                                <td id="discountLabel">Discount:</td>
+                                <td id="discountAmount">Rs 0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total:</strong></td>
+                                <td id="totalAmount"><strong>Rs 0.00</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="signature">
+                        <div class="signature-line"></div>
+                        <p id="previewSignature">Authorized Signature</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons no-print">
+                    <button id="printInvoice" class="btn-success">Print Invoice</button>
+                    <button id="generateInvoice" class="btn-success">Generate New Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate a unique 5-digit invoice number
+        function generateInvoiceNumber() {
+            // In a real application, this would come from a database or persistent storage
+            // For this demo, we'll generate a random 5-digit number
+            const randomNum = Math.floor(10000 + Math.random() * 90000);
+            return `INV${randomNum}`;
+        }
+
+        // Get currency symbol from input
+        function getCurrencySymbol() {
+            return document.getElementById('currencySymbol').value || 'Rs';
+        }
+
+        // Format number with currency symbol
+        function formatCurrency(amount) {
+            const symbol = getCurrencySymbol();
+            return symbol + ' ' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        // Update the invoice preview with current data
+        function updateInvoicePreview() {
+            const currencySymbol = getCurrencySymbol();
+            
+            // Shop details
+            document.getElementById('previewShopName').textContent = document.getElementById('shopName').value || 'Your Shop Name';
+            document.getElementById('previewShopContact').textContent = 'Contact: ' + (document.getElementById('shopContact').value || 'Your Contact');
+            document.getElementById('previewShopAddress').textContent = document.getElementById('shopAddress').value || 'Your Address';
+            
+            // Customer details
+            document.getElementById('previewCustomerName').textContent = document.getElementById('customerName').value || 'Customer Name';
+            
+            // Update table headers with currency symbol
+            document.getElementById('rateHeader').textContent = `Rate (${currencySymbol})`;
+            document.getElementById('amountHeader').textContent = `Amount (${currencySymbol})`;
+            
+            // Invoice items
+            const itemsTable = document.getElementById('invoiceItems').getElementsByTagName('tbody')[0];
+            itemsTable.innerHTML = '';
+            
+            let subtotal = 0;
+            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
+            
+            itemRows.forEach(row => {
+                const name = row.querySelector('.itemName').value;
+                const desc = row.querySelector('.itemDesc').value;
+                const qty = parseFloat(row.querySelector('.itemQty').value) || 0;
+                const rate = parseFloat(row.querySelector('.itemRate').value) || 0;
+                const amount = qty * rate;
+                
+                if (name || desc || qty || rate) {
+                    const newRow = itemsTable.insertRow();
+                    newRow.innerHTML = `
+                        <td>${name}</td>
+                        <td>${desc}</td>
+                        <td style="text-align: center;">${qty}</td>
+                        <td style="text-align: right;">${formatCurrency(rate)}</td>
+                        <td style="text-align: right;">${formatCurrency(amount)}</td>
+                    `;
+                    subtotal += amount;
+                }
+            });
+            
+            // Calculate discount
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
+            let discountAmount = 0;
+            
+            if (discountType === 'flat') {
+                discountAmount = discountValue;
+                document.getElementById('discountLabel').textContent = 'Discount:';
+            } else if (discountType === 'percent') {
+                discountAmount = subtotal * (discountValue / 100);
+                document.getElementById('discountLabel').textContent = `Discount (${discountValue}%):`;
+            } else {
+                document.getElementById('discountLabel').textContent = 'Discount:';
+            }
+            
+            // Update totals
+            const total = subtotal - discountAmount;
+            
+            document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('discountAmount').textContent = formatCurrency(discountAmount);
+            document.getElementById('totalAmount').innerHTML = `<strong>${formatCurrency(total)}</strong>`;
+            
+            // Update signature
+            document.getElementById('previewSignature').textContent = 
+                document.getElementById('shopName').value ? 
+                `Authorized Signature - ${document.getElementById('shopName').value}` : 
+                'Authorized Signature';
+        }
+
+        // Add a new item row
+        document.getElementById('addItem').addEventListener('click', function() {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'item-row';
+            newRow.innerHTML = `
+                <input type="text" class="itemName" placeholder="Item name">
+                <input type="text" class="itemDesc" placeholder="Description">
+                <input type="number" class="itemQty" placeholder="Qty" min="1" value="1">
+                <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
+            `;
+            itemsContainer.appendChild(newRow);
+            
+            // Add event listeners to new inputs
+            const inputs = newRow.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateInvoicePreview);
+            });
+        });
+
+        // Remove the last item row
+        document.getElementById('removeItem').addEventListener('click', function() {
+            const itemsContainer = document.getElementById('itemsContainer');
+            if (itemsContainer.children.length > 1) {
+                itemsContainer.removeChild(itemsContainer.lastChild);
+                updateInvoicePreview();
+            }
+        });
+
+        // Save profile to localStorage
+        document.getElementById('saveProfile').addEventListener('click', function() {
+            const profileName = document.getElementById('profileName').value;
+            if (!profileName) {
+                alert('Please enter a profile name');
+                return;
+            }
+            
+            const profileData = {
+                shopName: document.getElementById('shopName').value,
+                shopContact: document.getElementById('shopContact').value,
+                shopAddress: document.getElementById('shopAddress').value,
+                currencySymbol: document.getElementById('currencySymbol').value,
+                items: []
+            };
+            
+            // Collect all items
+            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
+            itemRows.forEach(row => {
+                profileData.items.push({
+                    name: row.querySelector('.itemName').value,
+                    desc: row.querySelector('.itemDesc').value,
+                    qty: row.querySelector('.itemQty').value,
+                    rate: row.querySelector('.itemRate').value
+                });
+            });
+            
+            // Save to localStorage
+            let profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+            profiles[profileName] = profileData;
+            localStorage.setItem('invoiceProfiles', JSON.stringify(profiles));
+            
+            alert('Profile saved successfully!');
+            updateProfileList();
+            document.getElementById('profileName').value = '';
+        });
+
+        // Load profile from localStorage
+        document.getElementById('loadProfile').addEventListener('click', function() {
+            const profileName = document.getElementById('profileName').value;
+            if (!profileName) {
+                alert('Please enter a profile name');
+                return;
+            }
+            
+            const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+            const profileData = profiles[profileName];
+            
+            if (!profileData) {
+                alert('Profile not found');
+                return;
+            }
+            
+            // Load shop data
+            document.getElementById('shopName').value = profileData.shopName || '';
+            document.getElementById('shopContact').value = profileData.shopContact || '';
+            document.getElementById('shopAddress').value = profileData.shopAddress || '';
+            document.getElementById('currencySymbol').value = profileData.currencySymbol || 'Rs';
+            
+            // Load items
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = '';
+            
+            if (profileData.items && profileData.items.length > 0) {
+                profileData.items.forEach(item => {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'item-row';
+                    newRow.innerHTML = `
+                        <input type="text" class="itemName" placeholder="Item name" value="${item.name || ''}">
+                        <input type="text" class="itemDesc" placeholder="Description" value="${item.desc || ''}">
+                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="${item.qty || 1}">
+                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01" value="${item.rate || ''}">
+                    `;
+                    itemsContainer.appendChild(newRow);
+                    
+                    // Add event listeners to new inputs
+                    const inputs = newRow.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        input.addEventListener('input', updateInvoicePreview);
+                    });
+                });
+            } else {
+                // Add one empty row if no items in profile
+                document.getElementById('addItem').click();
+            }
+            
+            updateInvoicePreview();
+            alert('Profile loaded successfully!');
+        });
+
+        // Update the profile list in the UI
+        function updateProfileList() {
+            const profileList = document.getElementById('profileList');
+            profileList.innerHTML = '';
+            
+            const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+            
+            for (const name in profiles) {
+                const profileItem = document.createElement('div');
+                profileItem.className = 'profile-item';
+                profileItem.innerHTML = `
+                    <span>${name}</span>
+                    <div>
+                        <button class="load-profile-btn" data-name="${name}">Load</button>
+                        <button class="delete-profile-btn" data-name="${name}">Delete</button>
+                    </div>
+                `;
+                profileList.appendChild(profileItem);
+            }
+            
+            // Add event listeners to load buttons
+            document.querySelectorAll('.load-profile-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const profileName = this.getAttribute('data-name');
+                    document.getElementById('profileName').value = profileName;
+                    document.getElementById('loadProfile').click();
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-profile-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const profileName = this.getAttribute('data-name');
+                    if (confirm(`Are you sure you want to delete the profile "${profileName}"?`)) {
+                        const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+                        delete profiles[profileName];
+                        localStorage.setItem('invoiceProfiles', JSON.stringify(profiles));
+                        updateProfileList();
+                    }
+                });
+            });
+        }
+
+        // Print invoice
+        document.getElementById('printInvoice').addEventListener('click', function() {
+            window.print();
+        });
+
+        // Generate new invoice
+        document.getElementById('generateInvoice').addEventListener('click', function() {
+            document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
+            document.getElementById('invoiceDate').valueAsDate = new Date();
+            
+            // Reset customer and items
+            document.getElementById('customerName').value = '';
+            
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = '';
+            document.getElementById('addItem').click();
+            
+            document.getElementById('discountType').value = 'none';
+            document.getElementById('discountValue').value = '';
+            
+            updateInvoicePreview();
+        });
+
+        // Initialize the app
+        function initApp() {
+            // Set current date
+            document.getElementById('invoiceDate').valueAsDate = new Date();
+            
+            // Generate initial invoice number
+            document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
+            
+            // Add event listeners to all inputs for real-time updates
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateInvoicePreview);
+            });
+            
+            // Load profiles list
+            updateProfileList();
+            
+            // Initial preview update
+            updateInvoicePreview();
+        }
+
+        // Start the application
+        initApp();
+    </script>
+</body>
+</html>
