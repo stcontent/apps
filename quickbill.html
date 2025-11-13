@@ -210,53 +210,76 @@
             border-radius: 5px;
         }
 
-        /* Print Styles for A5 */
+        /* ======= Print Styles for A5 (FIXED, no extra blank pages) ======= */
         @media print {
             @page {
                 size: A5;
                 margin: 10mm;
             }
-            
-            body * {
-                visibility: hidden;
+
+            body {
+                background: #ffffff;
+                margin: 0;
+                padding: 0;
             }
-            .invoice-preview, .invoice-preview * {
-                visibility: visible;
+
+            /* Hide everything we don't want to print */
+            header,
+            .settings-panel,
+            .no-print {
+                display: none !important;
             }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .app-container {
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+
             .invoice-preview {
-                position: absolute;
-                left: 0;
-                top: 0;
+                position: static;
                 width: 100%;
+                margin: 0;
                 padding: 0;
                 box-shadow: none;
-                background: white;
+                border-radius: 0;
+                background: #ffffff;
                 font-size: 11pt;
             }
-            .no-print {
-                display: none;
-            }
+
             table {
                 page-break-inside: auto;
                 font-size: 9pt;
             }
+
             tr {
                 page-break-inside: avoid;
                 page-break-after: auto;
             }
+
             .invoice-header {
                 margin-bottom: 15px;
                 padding-bottom: 10px;
             }
+
             .invoice-details {
                 margin-top: 15px;
             }
+
             .totals table {
                 width: 200px;
             }
+
             th, td {
                 padding: 6px 8px;
             }
+
             /* Ensure at least 5 items fit on one page */
             #invoiceItems tbody tr:nth-child(-n+5) {
                 page-break-inside: avoid;
