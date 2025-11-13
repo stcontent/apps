@@ -239,14 +239,14 @@
         @media print {
             @page {
                 size: A5;
-                margin: 6mm;
+                margin: 4mm;
             }
 
             body {
                 background: white;
             }
 
-            /* Hide everything we don't want printed */
+            /* Hide non-invoice parts */
             header,
             .settings-panel,
             .no-print {
@@ -268,22 +268,28 @@
             .invoice-preview {
                 position: static;
                 width: 100%;
-                padding: 5mm;
+                padding: 3mm;
                 box-shadow: none;
                 background: white;
-                font-size: 10pt;
+                font-size: 9pt;
                 page-break-inside: avoid;
+            }
+
+            .logo-image {
+                max-height: 30px;
+                max-width: 100px;
+                margin-bottom: 2px;
             }
 
             table {
                 page-break-inside: auto;
-                font-size: 8pt;
-                margin: 8px 0;
+                font-size: 7pt;
+                margin: 4px 0;
             }
 
             #invoiceItems th,
             #invoiceItems td {
-                padding: 3px 4px;
+                padding: 2px 3px;
             }
 
             tr {
@@ -292,23 +298,39 @@
             }
 
             .invoice-header {
-                margin-bottom: 10px;
-                padding-bottom: 8px;
+                margin-bottom: 6px;
+                padding-bottom: 4px;
             }
 
             .invoice-details {
-                margin-top: 10px;
+                margin-top: 6px;
+            }
+
+            .invoice-details .form-group {
+                margin-bottom: 4px;
             }
 
             .totals table {
-                width: 200px;
+                width: 180px;
+                margin-top: 4px;
             }
 
             .signature {
-                margin-top: 15px;
+                margin-top: 8px;
             }
 
-            /* Ensure up to ~10 items stay together */
+            .signature-image {
+                max-height: 25px;
+                max-width: 120px;
+                margin-bottom: 3px;
+            }
+
+            .signature-line {
+                margin-top: 3px;
+                width: 150px;
+            }
+
+            /* Keep up to ~10 items together on one page */
             #invoiceItems tbody tr {
                 page-break-inside: avoid;
             }
@@ -448,6 +470,7 @@
                 <div class="form-group">
                     <label for="logoUpload">Shop Logo (optional)</label>
                     <input type="file" id="logoUpload" accept="image/*">
+                    <button type="button" id="removeLogoBtn" class="btn-danger" style="margin-top:5px;">Remove Logo</button>
                 </div>
 
                 <h2>Currency Settings</h2>
@@ -493,6 +516,7 @@
                 <div class="form-group">
                     <label for="signatureUpload">Signature Image (optional)</label>
                     <input type="file" id="signatureUpload" accept="image/*">
+                    <button type="button" id="removeSignatureBtn" class="btn-danger" style="margin-top:5px;">Remove Signature</button>
                 </div>
 
                 <div class="profile-management">
@@ -879,6 +903,24 @@
                 });
             });
         }
+
+        // Remove logo
+        document.getElementById('removeLogoBtn').addEventListener('click', function () {
+            const logoInput = document.getElementById('logoUpload');
+            const logoImg = document.getElementById('previewLogo');
+            logoInput.value = '';
+            logoImg.removeAttribute('src');
+            logoImg.style.display = 'none';
+        });
+
+        // Remove signature
+        document.getElementById('removeSignatureBtn').addEventListener('click', function () {
+            const sigInput = document.getElementById('signatureUpload');
+            const sigImg = document.getElementById('previewSignatureImage');
+            sigInput.value = '';
+            sigImg.removeAttribute('src');
+            sigImg.style.display = 'none';
+        });
 
         // Print invoice
         document.getElementById('printInvoice').addEventListener('click', function() {
