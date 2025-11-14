@@ -26,67 +26,88 @@
 
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 1px solid #ddd;
         }
 
         h1 {
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .app-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .settings-panel {
-            flex: 1;
-            min-width: 300px;
             background: white;
-            padding: 20px;
+            padding: 12px 15px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
         }
 
-        .invoice-preview {
-            flex: 2;
-            min-width: 600px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .controls-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .controls-column {
+            flex: 1;
+            min-width: 260px;
+            background: #f9fafc;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .controls-column h2 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .controls-column h3 {
+            font-size: 0.95rem;
+            margin: 8px 0 6px;
+            color: #34495e;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 600;
             color: #555;
+            font-size: 0.9rem;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 8px 10px;
+            padding: 7px 9px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 14px;
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            resize: vertical;
         }
 
         button {
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 7px 12px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.9rem;
             transition: background-color 0.3s;
         }
 
@@ -110,45 +131,17 @@
             background-color: #27ae60;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            table-layout: fixed;
-        }
-
-        th, td {
-            padding: 8px 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            word-wrap: break-word;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        td {
-            font-size: 0.85rem;
-        }
-
-        .invoice-header {
+        .action-buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #2c3e50;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
         }
 
-        .invoice-left {
-            max-width: 60%;
-        }
-
-        .logo-wrapper {
-            margin-bottom: 8px;
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
         }
 
         .logo-image {
@@ -158,26 +151,110 @@
             display: block;
         }
 
+        .profile-list {
+            max-height: 120px;
+            overflow-y: auto;
+            margin-top: 6px;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 8px;
+            background: #f8f9fa;
+            margin-bottom: 4px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        .profile-item button {
+            font-size: 0.78rem;
+            padding: 4px 8px;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        /* Broader item name & description */
+        .item-row .itemName {
+            flex: 1.7;
+        }
+
+        .item-row .itemDesc {
+            flex: 2.2;
+        }
+
+        .item-row .itemQty {
+            flex: 0.7;
+            max-width: 80px;
+        }
+
+        .item-row .itemRate {
+            flex: 0.9;
+            max-width: 110px;
+        }
+
+        /* Invoice preview below */
+        .invoice-preview {
+            background: white;
+            padding: 15px 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .invoice-left {
+            max-width: 60%;
+        }
+
         .invoice-title {
             text-align: right;
         }
 
-        .invoice-details {
-            margin-top: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 15px 0;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
         .totals {
-            margin-top: 15px;
+            margin-top: 10px;
             text-align: right;
         }
 
         .totals table {
-            width: 250px;
+            width: 230px;
             margin-left: auto;
         }
 
         .signature {
-            margin-top: 30px;
+            margin-top: 18px;
             text-align: right;
         }
 
@@ -194,101 +271,16 @@
             border-top: 1px solid #333;
             width: 200px;
             margin-left: auto;
-            margin-top: 10px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .item-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        /* Broader item name & description boxes */
-        .item-row .itemName {
-            flex: 1.6;
-        }
-
-        .item-row .itemDesc {
-            flex: 2;
-        }
-
-        .item-row .itemQty {
-            flex: 0.6;
-            max-width: 80px;
-        }
-
-        .item-row .itemRate {
-            flex: 0.8;
-            max-width: 110px;
-        }
-
-        .profile-management {
-            margin-top: 10px;
-        }
-
-        .profile-list {
-            max-height: 160px;
-            overflow-y: auto;
             margin-top: 8px;
-        }
-
-        .profile-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            background: #f8f9fa;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-        }
-
-        /* TOP BAR: Profiles + JSON in columns */
-        .top-sections {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .top-section {
-            flex: 1;
-            min-width: 230px;
-            background: #f9fafc;
-            border: 1px solid #e1e4e8;
-            border-radius: 8px;
-            padding: 10px 12px;
-        }
-
-        .top-section h2 {
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-
-        .top-section .action-buttons {
-            margin-top: 8px;
-        }
-
-        .section-divider {
-            border: none;
-            border-top: 1px solid #e1e4e8;
-            margin: 10px 0 15px 0;
         }
 
         /* Inline message bar (no alerts) */
         .message-bar {
             display: none;
-            margin-bottom: 12px;
-            padding: 8px 10px;
+            margin-bottom: 10px;
+            padding: 7px 9px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
         .message-bar.success {
             background: #e6ffed;
@@ -372,14 +364,6 @@
                 padding-bottom: 6px;
             }
 
-            .invoice-details {
-                margin-top: 8px;
-            }
-
-            .invoice-details .form-group {
-                margin-bottom: 5px;
-            }
-
             .totals table {
                 width: 190px;
                 margin-top: 4px;
@@ -398,10 +382,6 @@
             .signature-line {
                 margin-top: 4px;
                 width: 180px;
-            }
-
-            #invoiceItems tbody tr {
-                page-break-inside: avoid;
             }
 
             body.compact-print .invoice-preview {
@@ -441,110 +421,68 @@
             }
         }
 
-        /* Mobile Responsive Styles */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
 
-            .app-container {
-                flex-direction: column;
-            }
-
-            .settings-panel, .invoice-preview {
+            .controls-column {
                 min-width: 100%;
-            }
-
-            .invoice-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .invoice-left {
-                max-width: 100%;
-            }
-
-            .invoice-title {
-                text-align: center;
-                margin-top: 15px;
             }
 
             .item-row {
                 flex-direction: column;
-                gap: 5px;
             }
 
-            .action-buttons {
+            .top-actions {
                 flex-direction: column;
             }
 
-            .action-buttons button {
+            .top-actions button {
                 width: 100%;
-            }
-
-            .totals table {
-                width: 100%;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            th, td {
-                padding: 8px 10px;
             }
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 5px;
+                padding: 6px;
             }
 
             .settings-panel, .invoice-preview {
-                padding: 15px;
+                padding: 12px;
             }
 
             h1 {
-                font-size: 1.5rem;
-            }
-
-            h2 {
-                font-size: 1.3rem;
+                font-size: 1.4rem;
             }
         }
 
-        /* Optimize table column widths for A5 */
+        /* Table column widths in preview */
         #invoiceItems {
             table-layout: fixed;
         }
-
         #invoiceItems th:nth-child(1),
         #invoiceItems td:nth-child(1) {
-            width: 20%;
+            width: 22%;
         }
-
         #invoiceItems th:nth-child(2),
         #invoiceItems td:nth-child(2) {
-            width: 35%;
+            width: 38%;
         }
-
         #invoiceItems th:nth-child(3),
         #invoiceItems td:nth-child(3) {
             width: 10%;
             text-align: center;
         }
-
         #invoiceItems th:nth-child(4),
         #invoiceItems td:nth-child(4) {
             width: 15%;
             text-align: right;
         }
-
         #invoiceItems th:nth-child(5),
         #invoiceItems td:nth-child(5) {
-            width: 20%;
+            width: 15%;
             text-align: right;
         }
     </style>
@@ -557,14 +495,63 @@
         </header>
 
         <div class="app-container">
+            <!-- TOP: ALL CONTROLS HORIZONTALLY IN COLUMNS -->
             <div class="settings-panel">
-                <!-- Inline message bar (no popup alerts) -->
                 <div id="messageBar" class="message-bar"></div>
 
-                <!-- TOP: Profiles & JSON in columns -->
-                <div class="top-sections">
-                    <div class="top-section">
-                        <h2>Save / Load Profile</h2>
+                <div class="controls-grid">
+                    <!-- Column 1: Shop + Currency + Customer -->
+                    <div class="controls-column">
+                        <h2>Shop & Customer</h2>
+                        <div class="form-group">
+                            <label for="shopName">Shop Name</label>
+                            <input type="text" id="shopName" value="Your Shop Name" placeholder="Enter shop name">
+                        </div>
+                        <div class="form-group">
+                            <label for="shopContact">Contact</label>
+                            <input type="text" id="shopContact" value="Your Contact" placeholder="Enter contact number">
+                        </div>
+                        <div class="form-group">
+                            <label for="shopAddress">Address</label>
+                            <textarea id="shopAddress" rows="3" placeholder="Enter shop address">Your Address</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="currencySymbol">Currency Symbol/Name</label>
+                            <input type="text" id="currencySymbol" value="Rs" placeholder="e.g. Rs, $, €, USD">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerName">Customer Name</label>
+                            <input type="text" id="customerName" placeholder="Enter customer name">
+                        </div>
+                        <div class="form-group">
+                            <label for="logoUpload">Shop Logo (optional)</label>
+                            <input type="file" id="logoUpload" accept="image/*">
+                            <button type="button" id="removeLogoBtn" class="btn-danger" style="margin-top:5px;">Remove Logo</button>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Items -->
+                    <div class="controls-column">
+                        <h2>Invoice Items</h2>
+                        <div id="itemsContainer">
+                            <div class="item-row">
+                                <input type="text" class="itemName" placeholder="Item name">
+                                <input type="text" class="itemDesc" placeholder="Description">
+                                <input type="number" class="itemQty" placeholder="Qty" min="1" value="1">
+                                <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="addItem" class="btn-success">Add Item</button>
+                            <button id="removeItem" class="btn-danger">Remove Item</button>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Profiles, JSON, Discount, Signature -->
+                    <div class="controls-column">
+                        <h2>Profiles & Settings</h2>
+
+                        <h3>Profiles</h3>
                         <div class="form-group">
                             <label for="profileName">Profile Name</label>
                             <input type="text" id="profileName" placeholder="Enter profile name">
@@ -574,10 +561,8 @@
                             <button id="loadProfile" class="btn-success">Load Profile</button>
                         </div>
                         <div class="profile-list" id="profileList"></div>
-                    </div>
 
-                    <div class="top-section">
-                        <h2>JSON Save / Load</h2>
+                        <h3 style="margin-top:10px;">JSON Save / Load</h3>
                         <div class="form-group">
                             <label for="jsonName">JSON Name</label>
                             <input type="text" id="jsonName" placeholder="Enter name for JSON file">
@@ -587,80 +572,40 @@
                             <button id="triggerLoadJsonBtn" class="btn-success">Load JSON</button>
                         </div>
                         <input type="file" id="loadJsonInput" accept="application/json" style="display:none;">
+
+                        <h3 style="margin-top:10px;">Discount</h3>
+                        <div class="form-group">
+                            <label for="discountType">Discount Type</label>
+                            <select id="discountType">
+                                <option value="none">No Discount</option>
+                                <option value="flat">Flat Amount</option>
+                                <option value="percent">Percentage</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="discountValue">Discount Value</label>
+                            <input type="number" id="discountValue" min="0" step="0.01" placeholder="Enter discount value">
+                        </div>
+
+                        <h3 style="margin-top:10px;">Signature</h3>
+                        <div class="form-group">
+                            <label for="signatureUpload">Signature Image (optional)</label>
+                            <input type="file" id="signatureUpload" accept="image/*">
+                            <button type="button" id="removeSignatureBtn" class="btn-danger" style="margin-top:5px;">Remove Signature</button>
+                        </div>
                     </div>
-                </div>
-
-                <hr class="section-divider">
-
-                <h2>Shop Information</h2>
-                <div class="form-group">
-                    <label for="shopName">Shop Name</label>
-                    <input type="text" id="shopName" placeholder="Enter shop name" value="Your Shop Name">
-                </div>
-                <div class="form-group">
-                    <label for="shopContact">Contact</label>
-                    <input type="text" id="shopContact" placeholder="Enter contact number" value="Your Contact">
-                </div>
-                <div class="form-group">
-                    <label for="shopAddress">Address</label>
-                    <textarea id="shopAddress" rows="3" placeholder="Enter shop address">Your Address</textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="logoUpload">Shop Logo (optional)</label>
-                    <input type="file" id="logoUpload" accept="image/*">
-                    <button type="button" id="removeLogoBtn" class="btn-danger" style="margin-top:5px;">Remove Logo</button>
-                </div>
-
-                <h2>Currency Settings</h2>
-                <div class="form-group">
-                    <label for="currencySymbol">Currency Symbol/Name</label>
-                    <input type="text" id="currencySymbol" placeholder="e.g. Rs, $, €, USD" value="Rs">
-                </div>
-
-                <h2>Customer Information</h2>
-                <div class="form-group">
-                    <label for="customerName">Customer Name</label>
-                    <input type="text" id="customerName" placeholder="Enter customer name">
-                </div>
-
-                <h2>Invoice Items</h2>
-                <div id="itemsContainer">
-                    <div class="item-row">
-                        <input type="text" class="itemName" placeholder="Item name">
-                        <input type="text" class="itemDesc" placeholder="Description">
-                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="1">
-                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
-                    </div>
-                </div>
-                <div class="action-buttons">
-                    <button id="addItem" class="btn-success">Add Item</button>
-                    <button id="removeItem" class="btn-danger">Remove Item</button>
-                </div>
-
-                <h2>Discount</h2>
-                <div class="form-group">
-                    <label for="discountType">Discount Type</label>
-                    <select id="discountType">
-                        <option value="none">No Discount</option>
-                        <option value="flat">Flat Amount</option>
-                        <option value="percent">Percentage</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="discountValue">Discount Value</label>
-                    <input type="number" id="discountValue" min="0" step="0.01" placeholder="Enter discount value">
-                </div>
-
-                <h2>Signature</h2>
-                <div class="form-group">
-                    <label for="signatureUpload">Signature Image (optional)</label>
-                    <input type="file" id="signatureUpload" accept="image/*">
-                    <button type="button" id="removeSignatureBtn" class="btn-danger" style="margin-top:5px;">Remove Signature</button>
                 </div>
             </div>
 
-            <div class="invoice-preview">
+            <!-- Buttons to control preview / print (no scrolling up/down to find them) -->
+            <div class="top-actions no-print">
+                <button id="previewInvoiceBtn" class="btn-success">Preview Invoice</button>
+                <button id="printInvoice" class="btn-success">Print Invoice</button>
+                <button id="generateInvoice" class="btn-success">Generate New Invoice</button>
+            </div>
+
+            <!-- INVOICE PREVIEW (hidden until Preview clicked) -->
+            <div id="invoicePreview" class="invoice-preview" style="display:none;">
                 <div class="invoice-header">
                     <div class="invoice-left">
                         <div class="logo-wrapper">
@@ -697,7 +642,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Items will be added here dynamically -->
+                            <!-- Items rows injected here -->
                         </tbody>
                     </table>
 
@@ -723,11 +668,6 @@
                         <div class="signature-line"></div>
                         <p id="previewSignature">Authorized Signature</p>
                     </div>
-                </div>
-
-                <div class="action-buttons no-print">
-                    <button id="printInvoice" class="btn-success">Print Invoice</button>
-                    <button id="generateInvoice" class="btn-success">Generate New Invoice</button>
                 </div>
             </div>
         </div>
@@ -761,18 +701,15 @@
             return `INV${randomNum}`;
         }
 
-        // Get currency symbol from input
         function getCurrencySymbol() {
             return document.getElementById('currencySymbol').value || 'Rs';
         }
 
-        // Format number with currency symbol
         function formatCurrency(amount) {
             const symbol = getCurrencySymbol();
             return symbol + ' ' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
 
-        // Adjust print density based on number of items (for up to ~10 items to fit)
         function adjustPrintDensity() {
             const rows = document.querySelectorAll('#invoiceItems tbody tr').length;
             if (rows >= 8) {
@@ -782,7 +719,7 @@
             }
         }
 
-        // Get current invoice + profile data as a JSON-serializable object
+        // Collect current data as JSON
         function getCurrentInvoiceData() {
             const itemRows = document.querySelectorAll('#itemsContainer .item-row');
             const items = [];
@@ -814,7 +751,7 @@
             };
         }
 
-        // Apply data from JSON object back into the UI
+        // Apply JSON to UI
         function applyInvoiceDataFromJson(data) {
             if (!data || typeof data !== 'object') return;
 
@@ -851,12 +788,8 @@
             document.getElementById('discountType').value = data.discountType || 'none';
             document.getElementById('discountValue').value = data.discountValue || '';
 
-            if (data.profileName) {
-                document.getElementById('profileName').value = data.profileName;
-            }
-            if (data.jsonName) {
-                document.getElementById('jsonName').value = data.jsonName;
-            }
+            if (data.profileName) document.getElementById('profileName').value = data.profileName;
+            if (data.jsonName) document.getElementById('jsonName').value = data.jsonName;
 
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.innerHTML = '';
@@ -871,8 +804,7 @@
                         <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01" value="${item.rate || ''}">
                     `;
                     itemsContainer.appendChild(newRow);
-                    const inputs = newRow.querySelectorAll('input');
-                    inputs.forEach(input => input.addEventListener('input', updateInvoicePreview));
+                    newRow.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateInvoicePreview));
                 });
             } else {
                 document.getElementById('addItem').click();
@@ -881,11 +813,10 @@
             updateInvoicePreview();
         }
 
-        // Update the invoice preview with current data
+        // Update invoice preview
         function updateInvoicePreview() {
             const currencySymbol = getCurrencySymbol();
 
-            // Shop details
             document.getElementById('previewShopName').textContent =
                 document.getElementById('shopName').value || 'Your Shop Name';
             document.getElementById('previewShopContact').textContent =
@@ -893,17 +824,14 @@
             document.getElementById('previewShopAddress').textContent =
                 document.getElementById('shopAddress').value || 'Your Address';
 
-            // Customer details
             document.getElementById('previewCustomerName').textContent =
                 document.getElementById('customerName').value || 'Customer Name';
 
-            // Headers
             document.getElementById('rateHeader').textContent = `Rate (${currencySymbol})`;
             document.getElementById('amountHeader').textContent = `Amount (${currencySymbol})`;
 
-            // Items
-            const itemsTable = document.getElementById('invoiceItems').getElementsByTagName('tbody')[0];
-            itemsTable.innerHTML = '';
+            const itemsTableBody = document.querySelector('#invoiceItems tbody');
+            itemsTableBody.innerHTML = '';
 
             let subtotal = 0;
             const itemRows = document.querySelectorAll('#itemsContainer .item-row');
@@ -916,19 +844,18 @@
                 const amount = qty * rate;
 
                 if (name || desc || qty || rate) {
-                    const newRow = itemsTable.insertRow();
-                    newRow.innerHTML = `
+                    const tr = itemsTableBody.insertRow();
+                    tr.innerHTML = `
                         <td>${name}</td>
                         <td>${desc}</td>
-                        <td style="text-align: center;">${qty}</td>
-                        <td style="text-align: right;">${formatCurrency(rate)}</td>
-                        <td style="text-align: right;">${formatCurrency(amount)}</td>
+                        <td style="text-align:center;">${qty}</td>
+                        <td style="text-align:right;">${formatCurrency(rate)}</td>
+                        <td style="text-align:right;">${formatCurrency(amount)}</td>
                     `;
                     subtotal += amount;
                 }
             });
 
-            // Discount
             const discountType = document.getElementById('discountType').value;
             const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
             let discountAmount = 0;
@@ -949,7 +876,6 @@
             document.getElementById('discountAmount').textContent = formatCurrency(discountAmount);
             document.getElementById('totalAmount').innerHTML = `<strong>${formatCurrency(total)}</strong>`;
 
-            // Signature text
             document.getElementById('previewSignature').textContent =
                 document.getElementById('shopName').value
                     ? `Authorized Signature - ${document.getElementById('shopName').value}`
@@ -958,7 +884,6 @@
             adjustPrintDensity();
         }
 
-        // Image upload helpers
         function handleImageUpload(inputId, imgId) {
             const input = document.getElementById(inputId);
             const img = document.getElementById(imgId);
@@ -966,7 +891,6 @@
             input.addEventListener('change', function () {
                 const file = this.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     img.src = e.target.result;
@@ -976,8 +900,8 @@
             });
         }
 
-        // Add a new item row
-        document.getElementById('addItem').addEventListener('click', function () {
+        // Add / Remove item rows
+        document.getElementById('addItem').addEventListener('click', () => {
             const itemsContainer = document.getElementById('itemsContainer');
             const newRow = document.createElement('div');
             newRow.className = 'item-row';
@@ -988,17 +912,11 @@
                 <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
             `;
             itemsContainer.appendChild(newRow);
-
-            const inputs = newRow.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('input', updateInvoicePreview);
-            });
-
+            newRow.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateInvoicePreview));
             updateInvoicePreview();
         });
 
-        // Remove last item row
-        document.getElementById('removeItem').addEventListener('click', function () {
+        document.getElementById('removeItem').addEventListener('click', () => {
             const itemsContainer = document.getElementById('itemsContainer');
             if (itemsContainer.children.length > 1) {
                 itemsContainer.removeChild(itemsContainer.lastChild);
@@ -1006,8 +924,8 @@
             }
         });
 
-        // Save profile to localStorage
-        document.getElementById('saveProfile').addEventListener('click', function () {
+        // Profiles
+        document.getElementById('saveProfile').addEventListener('click', () => {
             const profileName = document.getElementById('profileName').value.trim();
             if (!profileName) {
                 showMessage('error', 'Please enter a profile name.');
@@ -1024,8 +942,7 @@
                 items: []
             };
 
-            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
-            itemRows.forEach(row => {
+            document.querySelectorAll('#itemsContainer .item-row').forEach(row => {
                 profileData.items.push({
                     name: row.querySelector('.itemName').value,
                     desc: row.querySelector('.itemDesc').value,
@@ -1042,8 +959,7 @@
             updateProfileList();
         });
 
-        // Load profile from localStorage
-        document.getElementById('loadProfile').addEventListener('click', function () {
+        document.getElementById('loadProfile').addEventListener('click', () => {
             const profileName = document.getElementById('profileName').value.trim();
             if (!profileName) {
                 showMessage('error', 'Please enter a profile name.');
@@ -1052,7 +968,6 @@
 
             const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
             const profileData = profiles[profileName];
-
             if (!profileData) {
                 showMessage('error', 'Profile not found.');
                 return;
@@ -1083,7 +998,6 @@
 
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.innerHTML = '';
-
             if (profileData.items && profileData.items.length > 0) {
                 profileData.items.forEach(item => {
                     const newRow = document.createElement('div');
@@ -1095,11 +1009,7 @@
                         <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01" value="${item.rate || ''}">
                     `;
                     itemsContainer.appendChild(newRow);
-
-                    const inputs = newRow.querySelectorAll('input');
-                    inputs.forEach(input => {
-                        input.addEventListener('input', updateInvoicePreview);
-                    });
+                    newRow.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateInvoicePreview));
                 });
             } else {
                 document.getElementById('addItem').click();
@@ -1109,74 +1019,68 @@
             showMessage('success', 'Profile loaded successfully.');
         });
 
-        // Update profile list in UI
         function updateProfileList() {
             const profileList = document.getElementById('profileList');
             profileList.innerHTML = '';
-
             const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
 
             for (const name in profiles) {
-                const profileItem = document.createElement('div');
-                profileItem.className = 'profile-item';
-                profileItem.innerHTML = `
+                const item = document.createElement('div');
+                item.className = 'profile-item';
+                item.innerHTML = `
                     <span>${name}</span>
                     <div>
                         <button type="button" class="load-profile-btn" data-name="${name}">Load</button>
                         <button type="button" class="delete-profile-btn btn-danger" data-name="${name}">Delete</button>
                     </div>
                 `;
-                profileList.appendChild(profileItem);
+                profileList.appendChild(item);
             }
 
-            document.querySelectorAll('.load-profile-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const profileName = this.getAttribute('data-name');
-                    document.getElementById('profileName').value = profileName;
+            profileList.querySelectorAll('.load-profile-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const n = btn.getAttribute('data-name');
+                    document.getElementById('profileName').value = n;
                     document.getElementById('loadProfile').click();
                 });
             });
 
-            document.querySelectorAll('.delete-profile-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const profileName = this.getAttribute('data-name');
+            profileList.querySelectorAll('.delete-profile-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const n = btn.getAttribute('data-name');
                     let profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
-                    if (profiles[profileName]) {
-                        delete profiles[profileName];
+                    if (profiles[n]) {
+                        delete profiles[n];
                         localStorage.setItem('invoiceProfiles', JSON.stringify(profiles));
                         updateProfileList();
-                        showMessage('success', `Profile "${profileName}" deleted.`);
+                        showMessage('success', `Profile "${n}" deleted.`);
                     }
                 });
             });
         }
 
-        // Remove logo
-        document.getElementById('removeLogoBtn').addEventListener('click', function () {
-            const logoInput = document.getElementById('logoUpload');
-            const logoImg = document.getElementById('previewLogo');
-            logoInput.value = '';
-            logoImg.removeAttribute('src');
-            logoImg.style.display = 'none';
+        // Remove logo / signature
+        document.getElementById('removeLogoBtn').addEventListener('click', () => {
+            document.getElementById('logoUpload').value = '';
+            const img = document.getElementById('previewLogo');
+            img.removeAttribute('src');
+            img.style.display = 'none';
         });
 
-        // Remove signature
-        document.getElementById('removeSignatureBtn').addEventListener('click', function () {
-            const sigInput = document.getElementById('signatureUpload');
-            const sigImg = document.getElementById('previewSignatureImage');
-            sigInput.value = '';
-            sigImg.removeAttribute('src');
-            sigImg.style.display = 'none';
+        document.getElementById('removeSignatureBtn').addEventListener('click', () => {
+            document.getElementById('signatureUpload').value = '';
+            const img = document.getElementById('previewSignatureImage');
+            img.removeAttribute('src');
+            img.style.display = 'none';
         });
 
-        // JSON Download (save to file)
-        document.getElementById('downloadJsonBtn').addEventListener('click', function () {
+        // JSON download / load
+        document.getElementById('downloadJsonBtn').addEventListener('click', () => {
             const nameInput = document.getElementById('jsonName').value.trim();
             if (!nameInput) {
                 showMessage('error', 'Please enter a JSON name.');
                 return;
             }
-
             const data = getCurrentInvoiceData();
             data.jsonName = nameInput;
 
@@ -1193,22 +1097,20 @@
             showMessage('success', 'JSON file downloaded.');
         });
 
-        // JSON Load (from file)
-        document.getElementById('triggerLoadJsonBtn').addEventListener('click', function () {
+        document.getElementById('triggerLoadJsonBtn').addEventListener('click', () => {
             document.getElementById('loadJsonInput').click();
         });
 
-        document.getElementById('loadJsonInput').addEventListener('change', function (e) {
-            const file = e.target.files[0];
+        document.getElementById('loadJsonInput').addEventListener('change', (e) => {
+            const file = e.target.value ? e.target.files[0] : null;
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = function (ev) {
+            reader.onload = ev => {
                 try {
                     const data = JSON.parse(ev.target.result);
                     applyInvoiceDataFromJson(data);
                     showMessage('success', 'JSON loaded successfully.');
-                } catch (err) {
+                } catch {
                     showMessage('error', 'Invalid JSON file.');
                 }
                 e.target.value = '';
@@ -1216,17 +1118,28 @@
             reader.readAsText(file);
         });
 
-        // Print invoice
-        document.getElementById('printInvoice').addEventListener('click', function () {
+        // Preview, Print, New Invoice
+        document.getElementById('previewInvoiceBtn').addEventListener('click', () => {
+            updateInvoicePreview();
+            const preview = document.getElementById('invoicePreview');
+            preview.style.display = 'block';
+            preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showMessage('info', 'Invoice preview updated.');
+        });
+
+        document.getElementById('printInvoice').addEventListener('click', () => {
+            const preview = document.getElementById('invoicePreview');
+            if (preview.style.display === 'none') {
+                updateInvoicePreview();
+                preview.style.display = 'block';
+            }
             adjustPrintDensity();
             window.print();
         });
 
-        // Generate new invoice
-        document.getElementById('generateInvoice').addEventListener('click', function () {
+        document.getElementById('generateInvoice').addEventListener('click', () => {
             document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
             document.getElementById('invoiceDate').valueAsDate = new Date();
-
             document.getElementById('customerName').value = '';
 
             const itemsContainer = document.getElementById('itemsContainer');
@@ -1240,18 +1153,14 @@
             showMessage('info', 'New invoice generated.');
         });
 
-        // Initialize app
         function initApp() {
             const dateInput = document.getElementById('invoiceDate');
-            if (dateInput) {
-                dateInput.valueAsDate = new Date();
-            }
+            if (dateInput) dateInput.valueAsDate = new Date();
 
             document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
 
-            const inputs = document.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                if (input.type !== 'file') {
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.type !== 'file' && input.id !== 'invoiceDate') {
                     input.addEventListener('input', updateInvoicePreview);
                 }
             });
@@ -1264,10 +1173,8 @@
 
             if (window.matchMedia) {
                 const mql = window.matchMedia('print');
-                mql.addListener(function (mq) {
-                    if (mq.matches) {
-                        adjustPrintDensity();
-                    }
+                mql.addListener(mq => {
+                    if (mq.matches) adjustPrintDensity();
                 });
             }
             window.addEventListener('beforeprint', adjustPrintDensity);
