@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickBill - Billing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .settings-panel {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-preview {
+            flex: 2;
+            min-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        td {
+            font-size: 0.85rem;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .invoice-left {
+            max-width: 60%;
+        }
+
+        .logo-wrapper {
+            margin-bottom: 8px;
+        }
+
+        .logo-image {
+            max-height: 60px;
+            max-width: 150px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-details {
+            margin-top: 20px;
+        }
+
+        .totals {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        .totals table {
+            width: 250px;
+            margin-left: auto;
+        }
+
+        .signature {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .signature-image {
+            max-height: 60px;
+            max-width: 200px;
+            object-fit: contain;
+            display: block;
+            margin-left: auto;
+            margin-bottom: 5px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 200px;
+            margin-left: auto;
+            margin-top: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Broader item name & description boxes */
+        .item-row .itemName {
+            flex: 1.6;
+        }
+
+        .item-row .itemDesc {
+            flex: 2;
+        }
+
+        .item-row .itemQty {
+            flex: 0.6;
+            max-width: 80px;
+        }
+
+        .item-row .itemRate {
+            flex: 0.8;
+            max-width: 110px;
+        }
+
+        .profile-management {
+            margin-top: 10px;
+        }
+
+        .profile-list {
+            max-height: 160px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f8f9fa;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        /* TOP BAR: Profiles + JSON in columns */
+        .top-sections {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .top-section {
+            flex: 1;
+            min-width: 230px;
+            background: #f9fafc;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .top-section h2 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .top-section .action-buttons {
+            margin-top: 8px;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 1px solid #e1e4e8;
+            margin: 10px 0 15px 0;
+        }
+
+        /* Inline message bar (no alerts) */
+        .message-bar {
+            display: none;
+            margin-bottom: 12px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        .message-bar.success {
+            background: #e6ffed;
+            color: #1e7e34;
+            border: 1px solid #c3e6cb;
+        }
+        .message-bar.error {
+            background: #ffecec;
+            color: #c00;
+            border: 1px solid #f5c6cb;
+        }
+        .message-bar.info {
+            background: #e8f4ff;
+            color: #084298;
+            border: 1px solid #b6d4fe;
+        }
+
+        /* Print Styles for A5 */
+        @media print {
+            @page {
+                size: A5;
+                margin: 4mm;
+            }
+
+            body {
+                background: white;
+            }
+
+            header,
+            .settings-panel,
+            .no-print {
+                display: none !important;
+            }
+
+            .container {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .app-container {
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+
+            .invoice-preview {
+                position: static;
+                width: 100%;
+                padding: 4mm;
+                box-shadow: none;
+                background: white;
+                font-size: 9.5pt;
+                page-break-inside: avoid;
+            }
+
+            .logo-image {
+                max-height: 40px;
+                max-width: 130px;
+                margin-bottom: 4px;
+            }
+
+            table {
+                page-break-inside: auto;
+                font-size: 8pt;
+                margin: 6px 0;
+            }
+
+            #invoiceItems th,
+            #invoiceItems td {
+                padding: 3px 4px;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            .invoice-header {
+                margin-bottom: 8px;
+                padding-bottom: 6px;
+            }
+
+            .invoice-details {
+                margin-top: 8px;
+            }
+
+            .invoice-details .form-group {
+                margin-bottom: 5px;
+            }
+
+            .totals table {
+                width: 190px;
+                margin-top: 4px;
+            }
+
+            .signature {
+                margin-top: 10px;
+            }
+
+            .signature-image {
+                max-height: 40px;
+                max-width: 150px;
+                margin-bottom: 4px;
+            }
+
+            .signature-line {
+                margin-top: 4px;
+                width: 180px;
+            }
+
+            #invoiceItems tbody tr {
+                page-break-inside: avoid;
+            }
+
+            body.compact-print .invoice-preview {
+                font-size: 8.5pt;
+                padding: 3mm;
+            }
+
+            body.compact-print table {
+                font-size: 7pt;
+                margin: 4px 0;
+            }
+
+            body.compact-print #invoiceItems th,
+            body.compact-print #invoiceItems td {
+                padding: 2px 3px;
+            }
+
+            body.compact-print .logo-image {
+                max-height: 30px;
+                max-width: 110px;
+                margin-bottom: 2px;
+            }
+
+            body.compact-print .signature {
+                margin-top: 6px;
+            }
+
+            body.compact-print .signature-image {
+                max-height: 25px;
+                max-width: 120px;
+                margin-bottom: 3px;
+            }
+
+            body.compact-print .signature-line {
+                margin-top: 3px;
+                width: 150px;
+            }
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .app-container {
+                flex-direction: column;
+            }
+
+            .settings-panel, .invoice-preview {
+                min-width: 100%;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .invoice-left {
+                max-width: 100%;
+            }
+
+            .invoice-title {
+                text-align: center;
+                margin-top: 15px;
+            }
+
+            .item-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+
+            .totals table {
+                width: 100%;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+
+            .settings-panel, .invoice-preview {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Optimize table column widths for A5 */
+        #invoiceItems {
+            table-layout: fixed;
+        }
+
+        #invoiceItems th:nth-child(1),
+        #invoiceItems td:nth-child(1) {
+            width: 20%;
+        }
+
+        #invoiceItems th:nth-child(2),
+        #invoiceItems td:nth-child(2) {
+            width: 35%;
+        }
+
+        #invoiceItems th:nth-child(3),
+        #invoiceItems td:nth-child(3) {
+            width: 10%;
+            text-align: center;
+        }
+
+        #invoiceItems th:nth-child(4),
+        #invoiceItems td:nth-child(4) {
+            width: 15%;
+            text-align: right;
+        }
+
+        #invoiceItems th:nth-child(5),
+        #invoiceItems td:nth-child(5) {
+            width: 20%;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QuickBill - Billing System</h1>
+            <p>Create professional invoices quickly and easily</p>
+        </header>
+
+        <div class="app-container">
+            <div class="settings-panel">
+                <!-- Inline message bar (no popup alerts) -->
+                <div id="messageBar" class="message-bar"></div>
+
+                <!-- TOP: Profiles & JSON in columns -->
+                <div class="top-sections">
+                    <div class="top-section">
+                        <h2>Save / Load Profile</h2>
+                        <div class="form-group">
+                            <label for="profileName">Profile Name</label>
+                            <input type="text" id="profileName" placeholder="Enter profile name">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="saveProfile" class="btn-success">Save Profile</button>
+                            <button id="loadProfile" class="btn-success">Load Profile</button>
+                        </div>
+                        <div class="profile-list" id="profileList"></div>
+                    </div>
+
+                    <div class="top-section">
+                        <h2>JSON Save / Load</h2>
+                        <div class="form-group">
+                            <label for="jsonName">JSON Name</label>
+                            <input type="text" id="jsonName" placeholder="Enter name for JSON file">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="downloadJsonBtn" class="btn-success">Download JSON</button>
+                            <button id="triggerLoadJsonBtn" class="btn-success">Load JSON</button>
+                        </div>
+                        <input type="file" id="loadJsonInput" accept="application/json" style="display:none;">
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <h2>Shop Information</h2>
+                <div class="form-group">
+                    <label for="shopName">Shop Name</label>
+                    <input type="text" id="shopName" placeholder="Enter shop name" value="Your Shop Name">
+                </div>
+                <div class="form-group">
+                    <label for="shopContact">Contact</label>
+                    <input type="text" id="shopContact" placeholder="Enter contact number" value="Your Contact">
+                </div>
+                <div class="form-group">
+                    <label for="shopAddress">Address</label>
+                    <textarea id="shopAddress" rows="3" placeholder="Enter shop address">Your Address</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="logoUpload">Shop Logo (optional)</label>
+                    <input type="file" id="logoUpload" accept="image/*">
+                    <button type="button" id="removeLogoBtn" class="btn-danger" style="margin-top:5px;">Remove Logo</button>
+                </div>
+
+                <h2>Currency Settings</h2>
+                <div class="form-group">
+                    <label for="currencySymbol">Currency Symbol/Name</label>
+                    <input type="text" id="currencySymbol" placeholder="e.g. Rs, $, €, USD" value="Rs">
+                </div>
+
+                <h2>Customer Information</h2>
+                <div class="form-group">
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" id="customerName" placeholder="Enter customer name">
+                </div>
+
+                <h2>Invoice Items</h2>
+                <div id="itemsContainer">
+                    <div class="item-row">
+                        <input type="text" class="itemName" placeholder="Item name">
+                        <input type="text" class="itemDesc" placeholder="Description">
+                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="1">
+                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="addItem" class="btn-success">Add Item</button>
+                    <button id="removeItem" class="btn-danger">Remove Item</button>
+                </div>
+
+                <h2>Discount</h2>
+                <div class="form-group">
+                    <label for="discountType">Discount Type</label>
+                    <select id="discountType">
+                        <option value="none">No Discount</option>
+                        <option value="flat">Flat Amount</option>
+                        <option value="percent">Percentage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="discountValue">Discount Value</label>
+                    <input type="number" id="discountValue" min="0" step="0.01" placeholder="Enter discount value">
+                </div>
+
+                <h2>Signature</h2>
+                <div class="form-group">
+                    <label for="signatureUpload">Signature Image (optional)</label>
+                    <input type="file" id="signatureUpload" accept="image/*">
+                    <button type="button" id="removeSignatureBtn" class="btn-danger" style="margin-top:5px;">Remove Signature</button>
+                </div>
+            </div>
+
+            <div class="invoice-preview">
+                <div class="invoice-header">
+                    <div class="invoice-left">
+                        <div class="logo-wrapper">
+                            <img id="previewLogo" class="logo-image" alt="Logo" style="display:none;">
+                        </div>
+                        <h2 id="previewShopName">Your Shop Name</h2>
+                        <p id="previewShopContact">Contact: Your Contact</p>
+                        <p id="previewShopAddress">Your Address</p>
+                    </div>
+                    <div class="invoice-title">
+                        <h2>INVOICE</h2>
+                        <p id="previewInvoiceNo">INV00001</p>
+                    </div>
+                </div>
+
+                <div class="invoice-details">
+                    <div class="form-group">
+                        <label for="invoiceDate">Date</label>
+                        <input type="date" id="invoiceDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Bill To:</label>
+                        <p id="previewCustomerName">Customer Name</p>
+                    </div>
+
+                    <table id="invoiceItems">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th id="rateHeader">Rate</th>
+                                <th id="amountHeader">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items will be added here dynamically -->
+                        </tbody>
+                    </table>
+
+                    <div class="totals">
+                        <table>
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td id="subtotal">Rs 0.00</td>
+                            </tr>
+                            <tr>
+                                <td id="discountLabel">Discount:</td>
+                                <td id="discountAmount">Rs 0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total:</strong></td>
+                                <td id="totalAmount"><strong>Rs 0.00</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="signature">
+                        <img id="previewSignatureImage" class="signature-image" alt="Signature" style="display:none;">
+                        <div class="signature-line"></div>
+                        <p id="previewSignature">Authorized Signature</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons no-print">
+                    <button id="printInvoice" class="btn-success">Print Invoice</button>
+                    <button id="generateInvoice" class="btn-success">Generate New Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inline message helper (no alert popups)
+        function showMessage(type, text) {
+            const bar = document.getElementById('messageBar');
+            if (!bar) return;
+            if (!text) {
+                bar.style.display = 'none';
+                return;
+            }
+            bar.textContent = text;
+            bar.className = 'message-bar ' + (type || '');
+            bar.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    if (bar.textContent === text) {
+                        bar.style.display = 'none';
+                    }
+                }, 3000);
+            }
+        }
+
+        // Generate a unique 5-digit invoice number
+        function generateInvoiceNumber() {
+            const randomNum = Math.floor(10000 + Math.random() * 90000);
+            return `INV${randomNum}`;
+        }
+
+        // Get currency symbol from input
+        function getCurrencySymbol() {
+            return document.getElementById('currencySymbol').value || 'Rs';
+        }
+
+        // Format number with currency symbol
+        function formatCurrency(amount) {
+            const symbol = getCurrencySymbol();
+            return symbol + ' ' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        // Adjust print density based on number of items (for up to ~10 items to fit)
+        function adjustPrintDensity() {
+            const rows = document.querySelectorAll('#invoiceItems tbody tr').length;
+            if (rows >= 8) {
+                document.body.classList.add('compact-print');
+            } else {
+                document.body.classList.remove('compact-print');
+            }
+        }
+
+        // Get current invoice + profile data as a JSON-serializable object
+        function getCurrentInvoiceData() {
+            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
+            const items = [];
+            itemRows.forEach(row => {
+                items.push({
+                    name: row.querySelector('.itemName').value,
+                    desc: row.querySelector('.itemDesc').value,
+                    qty: row.querySelector('.itemQty').value,
+                    rate: row.querySelector('.itemRate').value
+                });
+            });
+
+            return {
+                type: 'quickbill-invoice',
+                jsonName: document.getElementById('jsonName').value || '',
+                profileName: document.getElementById('profileName').value || '',
+                shopName: document.getElementById('shopName').value,
+                shopContact: document.getElementById('shopContact').value,
+                shopAddress: document.getElementById('shopAddress').value,
+                currencySymbol: document.getElementById('currencySymbol').value,
+                logoImage: document.getElementById('previewLogo').getAttribute('src') || '',
+                signatureImage: document.getElementById('previewSignatureImage').getAttribute('src') || '',
+                invoiceNo: document.getElementById('previewInvoiceNo').textContent,
+                invoiceDate: document.getElementById('invoiceDate').value,
+                customerName: document.getElementById('customerName').value,
+                discountType: document.getElementById('discountType').value,
+                discountValue: document.getElementById('discountValue').value,
+                items: items
+            };
+        }
+
+        // Apply data from JSON object back into the UI
+        function applyInvoiceDataFromJson(data) {
+            if (!data || typeof data !== 'object') return;
+
+            document.getElementById('shopName').value = data.shopName || '';
+            document.getElementById('shopContact').value = data.shopContact || '';
+            document.getElementById('shopAddress').value = data.shopAddress || '';
+            document.getElementById('currencySymbol').value = data.currencySymbol || 'Rs';
+
+            const logoImg = document.getElementById('previewLogo');
+            if (data.logoImage) {
+                logoImg.src = data.logoImage;
+                logoImg.style.display = 'block';
+            } else {
+                logoImg.removeAttribute('src');
+                logoImg.style.display = 'none';
+            }
+
+            const sigImg = document.getElementById('previewSignatureImage');
+            if (data.signatureImage) {
+                sigImg.src = data.signatureImage;
+                sigImg.style.display = 'block';
+            } else {
+                sigImg.removeAttribute('src');
+                sigImg.style.display = 'none';
+            }
+
+            if (data.invoiceNo) {
+                document.getElementById('previewInvoiceNo').textContent = data.invoiceNo;
+            }
+            if (data.invoiceDate) {
+                document.getElementById('invoiceDate').value = data.invoiceDate;
+            }
+            document.getElementById('customerName').value = data.customerName || '';
+            document.getElementById('discountType').value = data.discountType || 'none';
+            document.getElementById('discountValue').value = data.discountValue || '';
+
+            if (data.profileName) {
+                document.getElementById('profileName').value = data.profileName;
+            }
+            if (data.jsonName) {
+                document.getElementById('jsonName').value = data.jsonName;
+            }
+
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = '';
+            if (Array.isArray(data.items) && data.items.length) {
+                data.items.forEach(item => {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'item-row';
+                    newRow.innerHTML = `
+                        <input type="text" class="itemName" placeholder="Item name" value="${item.name || ''}">
+                        <input type="text" class="itemDesc" placeholder="Description" value="${item.desc || ''}">
+                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="${item.qty || 1}">
+                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01" value="${item.rate || ''}">
+                    `;
+                    itemsContainer.appendChild(newRow);
+                    const inputs = newRow.querySelectorAll('input');
+                    inputs.forEach(input => input.addEventListener('input', updateInvoicePreview));
+                });
+            } else {
+                document.getElementById('addItem').click();
+            }
+
+            updateInvoicePreview();
+        }
+
+        // Update the invoice preview with current data
+        function updateInvoicePreview() {
+            const currencySymbol = getCurrencySymbol();
+
+            // Shop details
+            document.getElementById('previewShopName').textContent =
+                document.getElementById('shopName').value || 'Your Shop Name';
+            document.getElementById('previewShopContact').textContent =
+                'Contact: ' + (document.getElementById('shopContact').value || 'Your Contact');
+            document.getElementById('previewShopAddress').textContent =
+                document.getElementById('shopAddress').value || 'Your Address';
+
+            // Customer details
+            document.getElementById('previewCustomerName').textContent =
+                document.getElementById('customerName').value || 'Customer Name';
+
+            // Headers
+            document.getElementById('rateHeader').textContent = `Rate (${currencySymbol})`;
+            document.getElementById('amountHeader').textContent = `Amount (${currencySymbol})`;
+
+            // Items
+            const itemsTable = document.getElementById('invoiceItems').getElementsByTagName('tbody')[0];
+            itemsTable.innerHTML = '';
+
+            let subtotal = 0;
+            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
+
+            itemRows.forEach(row => {
+                const name = row.querySelector('.itemName').value;
+                const desc = row.querySelector('.itemDesc').value;
+                const qty = parseFloat(row.querySelector('.itemQty').value) || 0;
+                const rate = parseFloat(row.querySelector('.itemRate').value) || 0;
+                const amount = qty * rate;
+
+                if (name || desc || qty || rate) {
+                    const newRow = itemsTable.insertRow();
+                    newRow.innerHTML = `
+                        <td>${name}</td>
+                        <td>${desc}</td>
+                        <td style="text-align: center;">${qty}</td>
+                        <td style="text-align: right;">${formatCurrency(rate)}</td>
+                        <td style="text-align: right;">${formatCurrency(amount)}</td>
+                    `;
+                    subtotal += amount;
+                }
+            });
+
+            // Discount
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
+            let discountAmount = 0;
+
+            if (discountType === 'flat') {
+                discountAmount = discountValue;
+                document.getElementById('discountLabel').textContent = 'Discount:';
+            } else if (discountType === 'percent') {
+                discountAmount = subtotal * (discountValue / 100);
+                document.getElementById('discountLabel').textContent = `Discount (${discountValue}%):`;
+            } else {
+                document.getElementById('discountLabel').textContent = 'Discount:';
+            }
+
+            const total = subtotal - discountAmount;
+
+            document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('discountAmount').textContent = formatCurrency(discountAmount);
+            document.getElementById('totalAmount').innerHTML = `<strong>${formatCurrency(total)}</strong>`;
+
+            // Signature text
+            document.getElementById('previewSignature').textContent =
+                document.getElementById('shopName').value
+                    ? `Authorized Signature - ${document.getElementById('shopName').value}`
+                    : 'Authorized Signature';
+
+            adjustPrintDensity();
+        }
+
+        // Image upload helpers
+        function handleImageUpload(inputId, imgId) {
+            const input = document.getElementById(inputId);
+            const img = document.getElementById(imgId);
+
+            input.addEventListener('change', function () {
+                const file = this.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Add a new item row
+        document.getElementById('addItem').addEventListener('click', function () {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'item-row';
+            newRow.innerHTML = `
+                <input type="text" class="itemName" placeholder="Item name">
+                <input type="text" class="itemDesc" placeholder="Description">
+                <input type="number" class="itemQty" placeholder="Qty" min="1" value="1">
+                <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01">
+            `;
+            itemsContainer.appendChild(newRow);
+
+            const inputs = newRow.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateInvoicePreview);
+            });
+
+            updateInvoicePreview();
+        });
+
+        // Remove last item row
+        document.getElementById('removeItem').addEventListener('click', function () {
+            const itemsContainer = document.getElementById('itemsContainer');
+            if (itemsContainer.children.length > 1) {
+                itemsContainer.removeChild(itemsContainer.lastChild);
+                updateInvoicePreview();
+            }
+        });
+
+        // Save profile to localStorage
+        document.getElementById('saveProfile').addEventListener('click', function () {
+            const profileName = document.getElementById('profileName').value.trim();
+            if (!profileName) {
+                showMessage('error', 'Please enter a profile name.');
+                return;
+            }
+
+            const profileData = {
+                shopName: document.getElementById('shopName').value,
+                shopContact: document.getElementById('shopContact').value,
+                shopAddress: document.getElementById('shopAddress').value,
+                currencySymbol: document.getElementById('currencySymbol').value,
+                logoImage: document.getElementById('previewLogo').getAttribute('src') || '',
+                signatureImage: document.getElementById('previewSignatureImage').getAttribute('src') || '',
+                items: []
+            };
+
+            const itemRows = document.querySelectorAll('#itemsContainer .item-row');
+            itemRows.forEach(row => {
+                profileData.items.push({
+                    name: row.querySelector('.itemName').value,
+                    desc: row.querySelector('.itemDesc').value,
+                    qty: row.querySelector('.itemQty').value,
+                    rate: row.querySelector('.itemRate').value
+                });
+            });
+
+            let profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+            profiles[profileName] = profileData;
+            localStorage.setItem('invoiceProfiles', JSON.stringify(profiles));
+
+            showMessage('success', 'Profile saved successfully.');
+            updateProfileList();
+        });
+
+        // Load profile from localStorage
+        document.getElementById('loadProfile').addEventListener('click', function () {
+            const profileName = document.getElementById('profileName').value.trim();
+            if (!profileName) {
+                showMessage('error', 'Please enter a profile name.');
+                return;
+            }
+
+            const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+            const profileData = profiles[profileName];
+
+            if (!profileData) {
+                showMessage('error', 'Profile not found.');
+                return;
+            }
+
+            document.getElementById('shopName').value = profileData.shopName || '';
+            document.getElementById('shopContact').value = profileData.shopContact || '';
+            document.getElementById('shopAddress').value = profileData.shopAddress || '';
+            document.getElementById('currencySymbol').value = profileData.currencySymbol || 'Rs';
+
+            const logoImg = document.getElementById('previewLogo');
+            if (profileData.logoImage) {
+                logoImg.src = profileData.logoImage;
+                logoImg.style.display = 'block';
+            } else {
+                logoImg.removeAttribute('src');
+                logoImg.style.display = 'none';
+            }
+
+            const sigImg = document.getElementById('previewSignatureImage');
+            if (profileData.signatureImage) {
+                sigImg.src = profileData.signatureImage;
+                sigImg.style.display = 'block';
+            } else {
+                sigImg.removeAttribute('src');
+                sigImg.style.display = 'none';
+            }
+
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = '';
+
+            if (profileData.items && profileData.items.length > 0) {
+                profileData.items.forEach(item => {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'item-row';
+                    newRow.innerHTML = `
+                        <input type="text" class="itemName" placeholder="Item name" value="${item.name || ''}">
+                        <input type="text" class="itemDesc" placeholder="Description" value="${item.desc || ''}">
+                        <input type="number" class="itemQty" placeholder="Qty" min="1" value="${item.qty || 1}">
+                        <input type="number" class="itemRate" placeholder="Rate" min="0" step="0.01" value="${item.rate || ''}">
+                    `;
+                    itemsContainer.appendChild(newRow);
+
+                    const inputs = newRow.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        input.addEventListener('input', updateInvoicePreview);
+                    });
+                });
+            } else {
+                document.getElementById('addItem').click();
+            }
+
+            updateInvoicePreview();
+            showMessage('success', 'Profile loaded successfully.');
+        });
+
+        // Update profile list in UI
+        function updateProfileList() {
+            const profileList = document.getElementById('profileList');
+            profileList.innerHTML = '';
+
+            const profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+
+            for (const name in profiles) {
+                const profileItem = document.createElement('div');
+                profileItem.className = 'profile-item';
+                profileItem.innerHTML = `
+                    <span>${name}</span>
+                    <div>
+                        <button type="button" class="load-profile-btn" data-name="${name}">Load</button>
+                        <button type="button" class="delete-profile-btn btn-danger" data-name="${name}">Delete</button>
+                    </div>
+                `;
+                profileList.appendChild(profileItem);
+            }
+
+            document.querySelectorAll('.load-profile-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const profileName = this.getAttribute('data-name');
+                    document.getElementById('profileName').value = profileName;
+                    document.getElementById('loadProfile').click();
+                });
+            });
+
+            document.querySelectorAll('.delete-profile-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const profileName = this.getAttribute('data-name');
+                    let profiles = JSON.parse(localStorage.getItem('invoiceProfiles')) || {};
+                    if (profiles[profileName]) {
+                        delete profiles[profileName];
+                        localStorage.setItem('invoiceProfiles', JSON.stringify(profiles));
+                        updateProfileList();
+                        showMessage('success', `Profile "${profileName}" deleted.`);
+                    }
+                });
+            });
+        }
+
+        // Remove logo
+        document.getElementById('removeLogoBtn').addEventListener('click', function () {
+            const logoInput = document.getElementById('logoUpload');
+            const logoImg = document.getElementById('previewLogo');
+            logoInput.value = '';
+            logoImg.removeAttribute('src');
+            logoImg.style.display = 'none';
+        });
+
+        // Remove signature
+        document.getElementById('removeSignatureBtn').addEventListener('click', function () {
+            const sigInput = document.getElementById('signatureUpload');
+            const sigImg = document.getElementById('previewSignatureImage');
+            sigInput.value = '';
+            sigImg.removeAttribute('src');
+            sigImg.style.display = 'none';
+        });
+
+        // JSON Download (save to file)
+        document.getElementById('downloadJsonBtn').addEventListener('click', function () {
+            const nameInput = document.getElementById('jsonName').value.trim();
+            if (!nameInput) {
+                showMessage('error', 'Please enter a JSON name.');
+                return;
+            }
+
+            const data = getCurrentInvoiceData();
+            data.jsonName = nameInput;
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nameInput.replace(/[^a-z0-9_\-]/gi, '_') + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showMessage('success', 'JSON file downloaded.');
+        });
+
+        // JSON Load (from file)
+        document.getElementById('triggerLoadJsonBtn').addEventListener('click', function () {
+            document.getElementById('loadJsonInput').click();
+        });
+
+        document.getElementById('loadJsonInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    applyInvoiceDataFromJson(data);
+                    showMessage('success', 'JSON loaded successfully.');
+                } catch (err) {
+                    showMessage('error', 'Invalid JSON file.');
+                }
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        // Print invoice
+        document.getElementById('printInvoice').addEventListener('click', function () {
+            adjustPrintDensity();
+            window.print();
+        });
+
+        // Generate new invoice
+        document.getElementById('generateInvoice').addEventListener('click', function () {
+            document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
+            document.getElementById('invoiceDate').valueAsDate = new Date();
+
+            document.getElementById('customerName').value = '';
+
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = '';
+            document.getElementById('addItem').click();
+
+            document.getElementById('discountType').value = 'none';
+            document.getElementById('discountValue').value = '';
+
+            updateInvoicePreview();
+            showMessage('info', 'New invoice generated.');
+        });
+
+        // Initialize app
+        function initApp() {
+            const dateInput = document.getElementById('invoiceDate');
+            if (dateInput) {
+                dateInput.valueAsDate = new Date();
+            }
+
+            document.getElementById('previewInvoiceNo').textContent = generateInvoiceNumber();
+
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.type !== 'file') {
+                    input.addEventListener('input', updateInvoicePreview);
+                }
+            });
+
+            handleImageUpload('logoUpload', 'previewLogo');
+            handleImageUpload('signatureUpload', 'previewSignatureImage');
+
+            updateProfileList();
+            updateInvoicePreview();
+
+            if (window.matchMedia) {
+                const mql = window.matchMedia('print');
+                mql.addListener(function (mq) {
+                    if (mq.matches) {
+                        adjustPrintDensity();
+                    }
+                });
+            }
+            window.addEventListener('beforeprint', adjustPrintDensity);
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
